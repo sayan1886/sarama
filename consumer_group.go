@@ -1121,10 +1121,12 @@ func newConsumerGroupClaim(sess *consumerGroupSession, topic string, partition i
 	pcm, err := sess.parent.consumer.ConsumePartition(topic, partition, offset)
 
 	if errors.Is(err, ErrOffsetOutOfRange) && sess.parent.config.Consumer.Group.ResetInvalidOffsets {
+		Logger.Print("reseting invalid offset to Initial")
 		offset = sess.parent.config.Consumer.Offsets.Initial
 		pcm, err = sess.parent.consumer.ConsumePartition(topic, partition, offset)
 	}
 	if err != nil {
+		Logger.Print("not able to reset invalid offset to Initial, either Consumer.Group.ResetInvalidOffsets or error is not of ErrOffsetOutOfRange. Error: ", err)
 		return nil, err
 	}
 
